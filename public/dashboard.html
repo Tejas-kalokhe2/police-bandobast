@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Police Reporting Form</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: #e3f2fd;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    h1 {
+      background-color: #0d47a1;
+      color: white;
+      padding: 15px 0;
+      margin: 0 0 30px 0;
+    }
+
+    form {
+      background: white;
+      display: inline-block;
+      padding: 25px 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      text-align: left;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 20px;
+      background-color: #0d47a1;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #1565c0;
+    }
+
+    #msg {
+      margin-top: 20px;
+      font-weight: bold;
+      color: green;
+    }
+
+    footer {
+      margin-top: 50px;
+      color: #555;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <h1>👮 Police QR Reporting Form</h1>
+
+  <form id="reportForm">
+    <label for="name">Officer Name</label>
+    <input type="text" name="name" id="name" required />
+
+    <label for="rank">Rank</label>
+    <input type="text" name="rank" id="rank" required />
+
+    <label for="city">City / Unit</label>
+    <input type="text" name="city" id="city" required />
+
+    <label for="mobile">Mobile Number</label>
+    <input type="tel" name="mobile" id="mobile" required pattern="[0-9]{10}" maxlength="10" />
+
+    <label for="assigned_location">Assigned Location</label>
+    <input type="text" name="assigned_location" id="assigned_location" placeholder="(Optional)" />
+
+    <button type="submit">📤 Submit Report</button>
+  </form>
+
+  <p id="msg"></p>
+
+  <footer>© Police Deployment Management System</footer>
+
+  <script>
+    // Handle form submission
+    document.getElementById('reportForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const data = {
+        name: e.target.name.value.trim(),
+        rank: e.target.rank.value.trim(),
+        city: e.target.city.value.trim(),
+        mobile: e.target.mobile.value.trim(),
+        assigned_location: e.target.assigned_location.value.trim()
+      };
+
+      const res = await fetch('/submit-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      const msg = await res.text();
+      document.getElementById('msg').innerText = msg;
+
+      // Clear form after submit
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>

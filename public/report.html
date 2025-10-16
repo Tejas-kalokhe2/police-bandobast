@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Police Attendance Form</title>
+  <style>
+    body { font-family: Arial; background-color: #e3f2fd; text-align: center; padding-top: 50px; }
+    form { background: white; display: inline-block; padding: 25px; border-radius: 10px; box-shadow: 0 0 10px #aaa; }
+    input, select { margin: 8px; padding: 10px; width: 250px; border: 1px solid #ccc; border-radius: 5px; }
+    button { background-color: #0d47a1; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+    button:hover { background-color: #1565c0; }
+  </style>
+</head>
+<body>
+  <h2>👮 Police Reporting Form</h2>
+  <form id="reportForm">
+    <input type="text" name="name" placeholder="Officer Name" required><br>
+    <input type="text" name="rank" placeholder="Rank" required><br>
+    <input type="text" name="city" placeholder="City" required><br>
+    <input type="text" name="mobile" placeholder="Mobile Number" required><br>
+    <input type="text" name="assigned_location" placeholder="Assigned Location"><br>
+    <button type="submit">Submit</button>
+  </form>
+  <p id="msg"></p>
+
+  <script>
+    document.getElementById('reportForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = {
+        name: e.target.name.value,
+        rank: e.target.rank.value,
+        city: e.target.city.value,
+        mobile: e.target.mobile.value,
+        assigned_location: e.target.assigned_location.value
+      };
+
+      const res = await fetch('/submit-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      const msg = await res.text();
+      document.getElementById('msg').innerText = msg;
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>
