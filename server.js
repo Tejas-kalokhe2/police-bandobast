@@ -1,22 +1,25 @@
-// =============================================
+// ======================================================
 // 🚓 POLICE DEPLOYMENT APP SERVER (FINAL VERSION)
-// =============================================
+// ======================================================
 
-// Import modules (only once!)
+// Import modules
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const path = require('path');
 const db = require('./db'); // Import MySQL connection from db.js
 
 // Initialize the app
 const app = express();
-app.use(cors());
+app.use(cors()); // Enable CORS for all routes
 app.use(bodyParser.json());
-app.use(express.static('public')); // Serves HTML pages from /public
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public'))); // Serve static HTML files
 
-// =============================================
+// ======================================================
 // 1️⃣ LOGIN SYSTEM (Admin / Control Room)
-// =============================================
+// ======================================================
+
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
 
@@ -31,59 +34,56 @@ app.post('/login', (req, res) => {
 
       if (results.length > 0) {
         console.log(`✅ Login successful for user: ${username}`);
-        res.send('✅ Login successful');
+        res.redirect('/home.html'); // Redirect to dashboard/home page
       } else {
         console.warn(`⚠️ Invalid login for: ${username}`);
-        res.status(401).send('❌ Invalid username or password');
+        res.status(401).send('Invalid username or password');
       }
     }
   );
 });
 
-// =============================================
-// 2️⃣ OFFICER QR REPORT SUBMISSION
-// =============================================
-app.post('/submit-report', (req, res) => {
+// ======================================================
+// 2️⃣ OFFICER / REPORT SUBMISSION (QR Form Submission)
+// ======================================================
+
+app.post('/add-officer', (req, res) => {
   const { name, rank, city, mobile, assigned_location } = req.body;
 
-  if (!name || !rank || !city || !mobile) {
-    return res.status(400).send('❌ All required fields must be filled.');
-  }
-
-  const sql = `
-    INSERT INTO field_reports (name, rank, city, mobile, assigned_location)
-    VALUES (?, ?, ?, ?, ?)
-  `;
-
-  db.query(sql, [name, rank, city, mobile, assigned_location], (err) => {
+  const sql =
+    'INSERT INTO officers (name, `rank`, city, mobile, assigned_location) VALUES (?, ?, ?, ?, ?)';
+  db.query(sql, [name, rank, city, mobile, assigned_location], (err, result) => {
     if (err) {
-      console.error('❌ Error saving report:', err);
-      return res.status(500).send('Internal server error');
+      console.error('❌ Error adding officer:', err);
+      res.status(500).send('Database error');
+    } else {
+      console.log('✅ Officer added:', name);
+      res.redirect('/dashboard.html');
     }
-
-    console.log(`✅ Report submitted for officer: ${name}`);
-    res.send('✅ Report submitted successfully!');
   });
 });
 
-// =============================================
-// 3️⃣ FETCH REPORTS FOR DASHBOARD
-// =============================================
-app.get('/field-reports', (req, res) => {
-  db.query('SELECT * FROM field_reports ORDER BY timestamp DESC', (err, results) => {
-    if (err) {
-      console.error('❌ Error fetching reports:', err);
-      return res.status(500).send('Internal server error');
-    }
+// ======================================================
+// 3️⃣ FETCH ALL OFFICERS (Dashboard Display)
+// ======================================================
 
-    res.json(results);
+app.get('/officers', (req, res) => {
+  const sql = 'SELECT * FROM officers ORDER BY timestamp DESC';
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error('❌ Error fetching officers:', err);
+      res.status(500).send('Database error');
+    } else {
+      res.json(results);
+    }
   });
 });
 
-// =============================================
-// 4️⃣ START THE SERVER
-// =============================================
+// ======================================================
+// 4️⃣ START SERVER
+// ======================================================
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚓 Police App server running at http://localhost:${PORT}`);
+  console.log(`🚓 Police App server running on http://localhost:${PORT}`);
 });
