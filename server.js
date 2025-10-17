@@ -20,6 +20,10 @@ app.use(express.static(path.join(__dirname, 'public'))); // Serve static HTML fi
 // 1️⃣ LOGIN SYSTEM (Admin / Control Room)
 // ======================================================
 
+// ======================================================
+// 1️⃣ LOGIN SYSTEM (Admin / Control Room)
+// ======================================================
+
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
 
@@ -34,7 +38,7 @@ app.post('/login', (req, res) => {
 
       if (results.length > 0) {
         console.log(`✅ Login successful for user: ${username}`);
-        res.redirect('/home.html'); // Redirect to dashboard/home page
+        res.redirect('/home.html'); // ✅ Correct replacement done here
       } else {
         console.warn(`⚠️ Invalid login for: ${username}`);
         res.status(401).send('Invalid username or password');
@@ -42,6 +46,7 @@ app.post('/login', (req, res) => {
     }
   );
 });
+
 
 // ======================================================
 // 2️⃣ OFFICER / REPORT SUBMISSION (QR Form Submission)
@@ -86,9 +91,13 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
+app.get('/home.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'home.html'));
+});
+
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+ app.listen(PORT, () => {
   console.log(`🚓 Police App server running on http://localhost:${PORT}`);
 });
