@@ -82,8 +82,13 @@ app.get('/officers', (req, res) => {
 // ======================================================
 // 4️⃣ START SERVER
 // ======================================================
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
 
 const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
   console.log(`🚓 Police App server running on http://localhost:${PORT}`);
 });

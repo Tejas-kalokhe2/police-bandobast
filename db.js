@@ -1,16 +1,13 @@
-// db.js
 const mysql = require('mysql2');
 
-// ✅ Railway MySQL connection
 const connection = mysql.createConnection({
-  host: 'interchange.proxy.rlwy.net',   // from Railway Connect tab
-  user: 'root',                         // username from Railway
-  password: 'yCSivZMHrUTYBMCSSFKOarkhHsHGUYBj', // your Railway password
-  database: 'police_db',                // the database you created
-  port: 54828                           // Railway port
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT
 });
 
-// ✅ Connect and verify
 connection.connect((err) => {
   if (err) {
     console.error('❌ Database connection failed:', err);
